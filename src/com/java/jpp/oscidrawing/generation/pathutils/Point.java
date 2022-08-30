@@ -1,8 +1,8 @@
 package com.java.jpp.oscidrawing.generation.pathutils;
 
 public class Point {
-    private double x;
-    private double y;
+    private final double x;
+    private final double y;
 
     public Point(double x, double y) {
         this.x = x;
