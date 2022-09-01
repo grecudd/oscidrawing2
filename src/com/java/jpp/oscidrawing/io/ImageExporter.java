@@ -7,14 +7,14 @@ import java.io.File;
 public class ImageExporter {
     public static boolean writeToPNG(String pathWithoutSuffix, BufferedImage img) {
         try {
-            String path = pathWithoutSuffix + ".pgn";
+            String path = pathWithoutSuffix + ".png";
             File outputImage = new File(path);
 
             if(outputImage.exists()){
                 throw new Exception("Existent file");
             }
 
-            ImageIO.write(img, ".pgn", outputImage);
+            ImageIO.write(img, "PNG", outputImage);
         } catch(Exception e){
             return false;
         }
