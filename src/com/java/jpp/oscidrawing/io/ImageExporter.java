@@ -18,7 +18,6 @@ public class ImageExporter {
         } catch(Exception e){
             return false;
         }
-
         return true;
     }
 }
