@@ -11,7 +11,13 @@ public abstract class Signal {
 
     public abstract double getValueAtValid(int channel, int index);
 
-    public double getDuration() {throw new UnsupportedOperationException();}
+    public double getDuration() {
+        if(isInfinite() == true)
+        {
+            return -1.0;
+        }
+        return 0;
+    }
 
     public double getValueAt(int channel, int index) {
         throw new UnsupportedOperationException();

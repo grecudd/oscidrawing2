@@ -3,7 +3,7 @@ import com.java.jpp.oscidrawing.generation.pathutils.Point;
 
 public class Main {
     public static void main(String[] args) {
-        //pointTest();
+        pointTest();
         lineTest();
     }
 
@@ -15,7 +15,7 @@ public class Main {
         System.out.println(l.getStart());
         System.out.println(l.getEnd());
         System.out.println(l.getPointAt(20).toString());
-        System.out.println(l.toString());
+        System.out.println(l);
     }
 
     public static void pointTest() {
@@ -23,7 +23,7 @@ public class Main {
         Point p2 = new Point(1, 1);
 
         System.out.println(p.distanceTo(p2));
-        System.out.println(p.toString());
+        System.out.println(p);
         System.out.println(p.interpolateTo(p2, 0).toString());
         System.out.println(p.interpolateTo(p2, 1).toString());
         System.out.println(p.interpolateTo(p2, 2).toString());

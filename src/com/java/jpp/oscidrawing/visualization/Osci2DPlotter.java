@@ -17,6 +17,7 @@ public interface Osci2DPlotter {
     public BufferedImage getImage();
 
     public static Osci2DPlotter createImageCreator(int size, double scale, Color bgcol) {
-        throw new UnsupportedOperationException();
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+        return null;
     }
 }
