@@ -22,11 +22,18 @@ public class Line {
     }
 
     public Point getPointAt(double percentage) {
+        if(p1.getX() == p2.getX() && p1.getY() == p2.getY()){
+            return new Point(p1.getX(), p1.getY());
+        }
+
         if (percentage == 0) {
             return p1;
-        } else if (percentage == 1) {
+        }
+
+        if (percentage == 1) {
             return p2;
         }
+
         percentage = percentage / 100.0;
         return p1.interpolateTo(p2, percentage);
     }

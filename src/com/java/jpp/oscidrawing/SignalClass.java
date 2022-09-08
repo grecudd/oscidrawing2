@@ -13,13 +13,6 @@ public class SignalClass extends Signal{
     }
     @Override
     public boolean isInfinite() {
-        double E = 0.0;
-        for(Point val : values)
-        {
-            E += Math.pow(Math.abs(val.getY()), 2);
-        }
-        if(E != 0.0)
-            return true;
         return false;
     }
 
