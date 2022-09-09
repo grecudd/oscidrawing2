@@ -1,6 +1,13 @@
 package com.java.jpp.oscidrawing;
 
+import com.java.jpp.oscidrawing.generation.pathutils.Point;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Signal {
+    List<List<Point>> points = new ArrayList<>();
+
     public abstract boolean isInfinite();
 
     public abstract int getSize();
@@ -12,14 +19,15 @@ public abstract class Signal {
     public abstract double getValueAtValid(int channel, int index);
 
     public double getDuration() {
-        if(isInfinite() == true)
-        {
+        if (isInfinite()) {
             return -1.0;
         }
-        return 0;
+        return getSize()/getSampleRate();
     }
 
     public double getValueAt(int channel, int index) {
-        throw new UnsupportedOperationException();
+        if ((index >= getSize() || channel >= getChannelCount())||(index < 0 || channel < 0))
+            return 0;
+        return this.points.get(channel).get(index).getY();
     }
 }

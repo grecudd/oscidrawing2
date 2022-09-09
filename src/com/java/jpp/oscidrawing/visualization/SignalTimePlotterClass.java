@@ -6,13 +6,15 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class SignalTimePlotterClass implements SignalTimePlotter{
+    int timeScale;
+    int width;
     public SignalTimePlotterClass() {
 
     }
 
     @Override
     public int sampleIndexToImageXCoord(int sampleIndex, int sampleRate) {
-        return 0;
+        return ((sampleIndex-0)*(width-1-0))/((sampleRate*(timeScale-1)-0)-0);
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.util.List;
 public class SignalMono extends Signal{
     List<Point> values = new ArrayList<>();
     int sampleRate;
-    public SignalMono(final List<Point> values, int sampleRate){
+    public SignalMono(List<Point> values, int sampleRate){
         this.values = values;
         this.sampleRate = sampleRate;
     }

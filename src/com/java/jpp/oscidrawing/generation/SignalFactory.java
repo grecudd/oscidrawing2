@@ -1,55 +1,144 @@
 package com.java.jpp.oscidrawing.generation;
 
 import com.java.jpp.oscidrawing.Signal;
+import com.java.jpp.oscidrawing.SignalMono;
+import com.java.jpp.oscidrawing.SignalStereo;
 import com.java.jpp.oscidrawing.generation.pathutils.Point;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.DoubleUnaryOperator;
 
 public abstract class SignalFactory {
     public static Signal fromValues(double[] signalData, int sampleRate) {
-        throw new UnsupportedOperationException();
+        if (sampleRate < 0) throw new IllegalArgumentException();
+        List<Point> points = new ArrayList<>();
+        for (int i = 0; i < signalData.length; i++) {
+            points.add(new Point(i, signalData[i]));
+        }
+        return new SignalMono(points, sampleRate);
     }
 
     public static Signal wave(DoubleUnaryOperator function, double frequency, double duration, int sampleRate) {
-        throw new UnsupportedOperationException();
+        if (frequency < 0 || duration < 0 || sampleRate < 0) throw new IllegalArgumentException();
+        double step = (frequency * 2 * Math.PI) / sampleRate;
+        List<Point> points = new ArrayList<>();
+        for (int i = 0; i < sampleRate * duration; i++) {
+            points.add(new Point(i, function.applyAsDouble(i * step)));
+        }
+        return new SignalMono(points, sampleRate);
     }
 
     public static Signal rampUp(double duration, int sampleRate) {
-        throw new UnsupportedOperationException();
+        if (duration < 0 || sampleRate < 0) throw new IllegalArgumentException();
+        List<Point> points = new ArrayList<>();
+        for (int i = 0; i < sampleRate * duration; i++) {
+            if (i == sampleRate * duration - 1)
+                if (i / (duration * sampleRate - 1) < 2) throw new IllegalArgumentException();
+            points.add(new Point(i, i / (duration * sampleRate - 1)));
+        }
+        return new SignalMono(points, sampleRate);
     }
 
     public static Signal combineMonoSignals(List<Signal> signals) {
-        throw new UnsupportedOperationException();
+        if (signals == null) throw new NullPointerException();
+        if (signals.size() == 0) throw new IllegalArgumentException();
+        int sampleRate = signals.get(0).getSampleRate();
+        int size = Integer.MAX_VALUE;
+        for (Signal signal : signals) {
+            if (signal.getSampleRate() != sampleRate || signal.getChannelCount() != 1)
+                throw new IllegalArgumentException();
+            if (signal.getSize() < size)
+                size = signal.getSize();
+        }
+        List<List<Point>> signal = new ArrayList<>();
+        for (Signal value : signals) {
+            List<Point> points = new ArrayList<>();
+            for (int j = 0; j < size; j++) {
+                points.add(new Point(j, value.getValueAtValid(0, j)));
+            }
+            signal.add(points);
+        }
+        return new SignalStereo(signal, sampleRate);
     }
 
     public static Signal combineMonoSignals(Signal... signals) {
-        throw new UnsupportedOperationException();
+        Signal signal = combineMonoSignals(Arrays.stream(signals).toList());
+        return signal;
     }
 
     public static Signal stereoFromMonos(Signal left, Signal right) {
-        throw new UnsupportedOperationException();
+        Signal signal = combineMonoSignals(Arrays.asList(left, right));
+        return signal;
     }
 
     public static Signal extractChannels(Signal source, int... channels) {
-        throw new UnsupportedOperationException();
+        if (source == null)
+            throw new NullPointerException();
+        if (Arrays.stream(channels).anyMatch(z -> z < 0 || z > source.getChannelCount()))
+            throw new IllegalArgumentException();
+        List<List<Point>> signal = new ArrayList<>();
+        for (int i = 0; i < channels.length; i++) {
+            List<Point> points = new ArrayList<>();
+            for (int j = 0; j < source.getSize(); j++) {
+                points.add(new Point(i, source.getValueAtValid(channels[i], j)));
+            }
+            signal.add(points);
+        }
+        return new SignalStereo(signal, source.getSampleRate());
     }
 
     public static Signal circle(double frequency, double duration, int sampleRate) {
-        throw new UnsupportedOperationException();
+        if (frequency < 0 || duration < 0 || sampleRate < 0)
+            throw new IllegalArgumentException();
+        double step = (frequency * 2 * Math.PI) / sampleRate;
+        List<Point> sin = new ArrayList<>();
+        List<Point> cos = new ArrayList<>();
+        for (int i = 0; i < sampleRate * duration; i++) {
+            sin.add(new Point(i, Math.sin(i * step)));
+            cos.add(new Point(i, Math.cos(i * step)));
+        }
+        List<List<Point>> signal = new ArrayList<>();
+        signal.add(sin);
+        signal.add(cos);
+        return new SignalStereo(signal, sampleRate);
     }
 
     public static Signal cycle(Signal signal) {
-        throw new UnsupportedOperationException();
+        if (signal == null)
+            throw new NullPointerException();
+        return new SignalMono(new ArrayList<>(), 1);
     }
 
     public static Signal infiniteFromValue(double value, int sampleRate) {
-        throw new UnsupportedOperationException();
+        List<Point> points = new ArrayList<>();
+        for (int i = 0; i < 1000; i += sampleRate) {
+            points.add(new Point(i, value));
+        }
+        return new SignalMono(points, sampleRate);
     }
 
     public static Signal take(int count, Signal source) {
-        throw new UnsupportedOperationException();
+        if (count < 0)
+            throw new IllegalArgumentException();
+        List<List<Point>> signal = new ArrayList<>();
+        for (int j = 0; j < source.getChannelCount(); j++) {
+            List<Point> points = new ArrayList<>();
+            for (int i = 0; i < source.getSize(); i++) {
+                if (source.getSize() > count) {
+                    points.add(new Point(i, source.getValueAtValid(j, i)));
+                } else {
+                    if (i >= count) {
+                        points.add(new Point(i, source.getValueAtValid(j, 0)));
+                    } else
+                        points.add(new Point(i, source.getValueAtValid(j, i)));
+                }
+            }
+            signal.add(points);
+        }
+        return new SignalStereo(signal, source.getSampleRate());
     }
 
     public static Signal drop(int count, Signal source) {

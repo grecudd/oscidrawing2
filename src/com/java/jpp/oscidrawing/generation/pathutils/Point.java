@@ -27,19 +27,12 @@ public class Point {
     }
 
     public Point interpolateTo(Point p, double factor) {
-        if (this.x == p.getX() && this.y == p.getY()) {
-            return new Point(this.x, this.y);
-        }
-
         if (factor == 0) {
-            return new Point(x, y);
+            return this;
         }
-
         if (factor == 1) {
-            return new Point(p.getX(), p.getY());
+            return p;
         }
-
-
         return new Point(x + factor * p.getX(), y + factor * p.getY());
     }
 }
