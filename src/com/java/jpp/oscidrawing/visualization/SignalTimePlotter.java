@@ -45,6 +45,7 @@ public interface SignalTimePlotter {
             {
                 throw new Exception("ValScare too big");
             }
+
             for (int x = 0; x < width; x++) {
                 image.setRGB(x, middle +  (int) valScale, Color.WHITE.getRGB());
             }

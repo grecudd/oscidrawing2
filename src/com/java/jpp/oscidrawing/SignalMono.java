@@ -2,14 +2,16 @@ package com.java.jpp.oscidrawing;
 
 import com.java.jpp.oscidrawing.generation.pathutils.Point;
 
+import javax.naming.directory.InvalidAttributesException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SignalClass extends Signal{
+public class SignalMono extends Signal{
     List<Point> values = new ArrayList<>();
-
-    public SignalClass(final List<Point> values){
+    int sampleRate;
+    public SignalMono(final List<Point> values, int sampleRate){
         this.values = values;
+        this.sampleRate = sampleRate;
     }
     @Override
     public boolean isInfinite() {
@@ -27,16 +29,16 @@ public class SignalClass extends Signal{
 
     @Override
     public int getChannelCount() {
-        return 0;
+        return 1;
     }
 
     @Override
     public int getSampleRate() {
-        return 0;
+        return sampleRate;
     }
 
     @Override
     public double getValueAtValid(int channel, int index) {
-        return 0;
+        return values.get(index).getY();
     }
 }
