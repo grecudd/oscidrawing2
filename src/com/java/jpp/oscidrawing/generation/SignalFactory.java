@@ -142,28 +142,28 @@ public abstract class SignalFactory {
     }
 
     public static Signal drop(int count, Signal source) {
-        if(count < 0){
+        if (count < 0) {
             throw new IllegalArgumentException("Count is negative");
         }
 
-        if(source.isInfinite() == false){
+        if (source.isInfinite() == false) {
             //if count >= size return empty signal
-            if(count >= source.getSize()) {
+            if (count >= source.getSize()) {
                 if (source.getChannelCount() == 1) {
                     return new SignalMono(source.getSampleRate());
                 } else return new SignalStereo(source.getSampleRate());
             } else {
                 List<List<Point>> signal = new ArrayList<>();
-                for(int channel = 0; channel < source.getChannelCount(); channel++){
+                for (int channel = 0; channel < source.getChannelCount(); channel++) {
                     List<Point> points = new ArrayList<>();
-                    for (int index = count; index < source.getSize(); index++){
+                    for (int index = count; index < source.getSize(); index++) {
                         points.add(new Point(channel, source.getValueAtValid(channel, index)));
                     }
 
                     signal.add(points);
                 }
 
-                if(source.getChannelCount() == 1)
+                if (source.getChannelCount() == 1)
                     return new SignalMono(signal.get(0), source.getSampleRate());
                 return new SignalStereo(signal, source.getSampleRate());
             }
@@ -173,48 +173,61 @@ public abstract class SignalFactory {
     }
 
     public static Signal transform(DoubleUnaryOperator function, Signal source) {
-        throw new UnsupportedOperationException();
+        if (function == null)
+            throw new NullPointerException();
+
+        if (source == null)
+            throw new NullPointerException();
+
+        List<List<Point>> signal = new ArrayList<>();
+        for (int channel = 0; channel < source.getChannelCount(); channel++) {
+            List<Point> points = new ArrayList<>();
+            for (int index = 0; index < source.getSize(); index++) {
+                points.add(new Point(channel, function.applyAsDouble(source.getValueAtValid(channel, index))));
+            }
+            signal.add(points);
+        }
+
+        if (source.getChannelCount() == 1)
+            return new SignalMono(signal.get(0), source.getSampleRate());
+        return new SignalStereo(signal, source.getSampleRate());
     }
 
     public static Signal scale(double amplitude, Signal source) {
-        if(source == null)
+        if (source == null)
             throw new NullPointerException("Null source ");
 
         List<List<Point>> signal = new ArrayList<>();
-        for(int channel = 0; channel < source.getChannelCount(); channel++)
-        {
+        for (int channel = 0; channel < source.getChannelCount(); channel++) {
             List<Point> points = new ArrayList<>();
-            for(int index = 0; index < source.getSize(); index++)
-            {
+            for (int index = 0; index < source.getSize(); index++) {
                 points.add(new Point(channel, source.getValueAtValid(channel, index) * amplitude));
             }
             signal.add(points);
         }
 
-        if(source.getChannelCount() == 1)
+        if (source.getChannelCount() == 1)
             return new SignalMono(signal.get(0), source.getSampleRate());
         return new SignalStereo(signal, source.getSampleRate());
     }
 
     public static Signal reverse(Signal source) {
-        if(source == null)
+        if (source == null)
             throw new NullPointerException();
 
-        if(source.isInfinite() == true)
+        if (source.isInfinite() == true)
             throw new IllegalArgumentException();
 
         List<List<Point>> signal = new ArrayList<>();
-        for(int channel = 0; channel < source.getChannelCount(); channel++)
-        {
+        for (int channel = 0; channel < source.getChannelCount(); channel++) {
             List<Point> points = new ArrayList<>();
-            for(int index = 0; index < source.getSize(); index++)
-            {
+            for (int index = 0; index < source.getSize(); index++) {
                 points.add(new Point(channel, source.getValueAtValid(channel, source.getSize() - 1 - index)));
             }
             signal.add(points);
         }
 
-        if(source.getChannelCount() == 1)
+        if (source.getChannelCount() == 1)
             return new SignalMono(signal.get(0), source.getSampleRate());
         return new SignalStereo(signal, source.getSampleRate());
 
