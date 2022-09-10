@@ -13,6 +13,15 @@ public class SignalStereo extends Signal {
         this.values = values;
         this.sampleRate = sampleRate;
     }
+
+    public SignalStereo(){
+
+    }
+
+    public SignalStereo(int sampleRate) {
+        this.sampleRate = sampleRate;
+    }
+
     @Override
     public boolean isInfinite() {
         return false;

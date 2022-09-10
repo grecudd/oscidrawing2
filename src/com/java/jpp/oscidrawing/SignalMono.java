@@ -13,10 +13,19 @@ public class SignalMono extends Signal{
         this.values = values;
         this.sampleRate = sampleRate;
     }
+
+    public SignalMono(){
+
+    }
+
+    public SignalMono(int sampleRate) {
+        this.sampleRate = sampleRate;
+    }
     @Override
     public boolean isInfinite() {
         return false;
     }
+
 
     @Override
     public int getSize() {
