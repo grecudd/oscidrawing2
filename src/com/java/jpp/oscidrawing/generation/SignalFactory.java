@@ -169,7 +169,7 @@ public abstract class SignalFactory {
             }
         }
 
-        return null;
+        return source;
     }
 
     public static Signal transform(DoubleUnaryOperator function, Signal source) {
@@ -177,7 +177,23 @@ public abstract class SignalFactory {
     }
 
     public static Signal scale(double amplitude, Signal source) {
-        throw new UnsupportedOperationException();
+        if(source == null)
+            throw new NullPointerException("Null source ");
+
+        List<List<Point>> signal = new ArrayList<>();
+        for(int channel = 0; channel < source.getChannelCount(); channel++)
+        {
+            List<Point> points = new ArrayList<>();
+            for(int index = 0; index < source.getSize(); index++)
+            {
+                points.add(new Point(channel, source.getValueAtValid(channel, index) * amplitude));
+            }
+            signal.add(points);
+        }
+
+        if(source.getChannelCount() == 1)
+            return new SignalMono(signal.get(0), source.getSampleRate());
+        return new SignalStereo(signal, source.getSampleRate());
     }
 
     public static Signal reverse(Signal source) {
