@@ -302,7 +302,35 @@ public abstract class SignalFactory {
     }
 
     public static Signal mult(Signal s1, Signal s2) {
-        throw new UnsupportedOperationException();
+        if(s1 == null || s2 == null)
+            throw new NullPointerException();
+
+        if(s1.getSampleRate() != s2.getSampleRate())
+            throw new IllegalArgumentException();
+
+        if(s1.getChannelCount() != s2.getChannelCount())
+            throw new IllegalArgumentException();
+
+        int size = s1.getSize() < s2.getSize() ? s1.getSize() : s2.getSize();
+
+        List<List<Point>> values = new ArrayList<>();
+
+        for(int channel = 0; channel < s1.getChannelCount(); channel++)
+        {
+            List<Point> points = new ArrayList<>();
+
+            for(int index = 0; index < size; index++)
+            {
+                points.add(new Point(channel,
+                        s1.getValueAtValid(channel, index) * s2.getValueAtValid(channel, index)));
+            }
+
+            values.add(points);
+        }
+
+        if(s1.getChannelCount() == 1)
+            return new SignalMono(values.get(0), s1.getSampleRate());
+        return new SignalStereo(values, s1.getSampleRate());
     }
 
     public static Signal append(List<Signal> signals) {
