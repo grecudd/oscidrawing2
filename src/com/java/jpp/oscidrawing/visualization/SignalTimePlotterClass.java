@@ -8,8 +8,10 @@ import java.awt.image.BufferedImage;
 public class SignalTimePlotterClass implements SignalTimePlotter{
     int timeScale;
     int width;
-    public SignalTimePlotterClass() {
-
+    BufferedImage image;
+    public SignalTimePlotterClass(int timeScale, int width) {
+        this.timeScale = timeScale;
+        this.width = width;
     }
 
     @Override
@@ -39,6 +41,6 @@ public class SignalTimePlotterClass implements SignalTimePlotter{
 
     @Override
     public BufferedImage getImage() {
-        return null;
+        return image;
     }
 }

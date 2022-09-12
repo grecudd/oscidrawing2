@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Signal {
-    List<List<Point>> points = new ArrayList<>();
 
     public abstract boolean isInfinite();
 
