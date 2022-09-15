@@ -13,8 +13,6 @@ public class AudioExporter {
         }
         try {
             path += ".raw";
-
-
             DataOutputStream data = new DataOutputStream(new FileOutputStream(path));
             for (int i = 0; i < signal.getSize(); i++) {
                 float valueAt = (float) signal.getValueAt(channel, i);
