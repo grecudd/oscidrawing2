@@ -13,6 +13,12 @@ public class Osci2DPlotterClass implements Osci2DPlotter{
         this.image = image;
     }
 
+    public Osci2DPlotterClass(BufferedImage image, int size, double scale) {
+        this.image = image;
+        this.size = size;
+        this.scale = scale;
+    }
+
     public Osci2DPlotterClass(int size, double scale, Color bgcol) {
         this.size = size;
         this.scale = scale;

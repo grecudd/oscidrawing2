@@ -22,6 +22,6 @@ public interface Osci2DPlotter {
             for (int j = 0; j < size; j++) {
                 image.setRGB(i, j, bgcol.getRGB());
             }
-        return new Osci2DPlotterClass(image);
+        return new Osci2DPlotterClass(image, size, scale);
     }
 }
