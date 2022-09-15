@@ -43,7 +43,7 @@ public interface SignalTimePlotter {
         if(valScale != 0) {
             if(middle +  (int) valScale >= height)
             {
-                throw new Exception("ValScare too big");
+                throw new IllegalArgumentException();
             }
 
             for (int x = 0; x < width; x++) {
@@ -55,6 +55,6 @@ public interface SignalTimePlotter {
             }
         }
 
-        return null;
+        return new SignalTimePlotterClass(image);
     }
 }

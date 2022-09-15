@@ -9,6 +9,9 @@ public class SignalTimePlotterClass implements SignalTimePlotter{
     int timeScale;
     int width;
     BufferedImage image;
+    public SignalTimePlotterClass(BufferedImage image){
+        this.image = image;
+    }
     public SignalTimePlotterClass(int timeScale, int width) {
         this.timeScale = timeScale;
         this.width = width;
