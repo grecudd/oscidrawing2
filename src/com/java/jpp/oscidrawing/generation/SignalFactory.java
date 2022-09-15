@@ -7,16 +7,14 @@ import com.java.jpp.oscidrawing.generation.pathutils.Point;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.DoubleUnaryOperator;
 
 public abstract class SignalFactory {
     public static Signal fromValues(double[] signalData, int sampleRate) {
-        if(sampleRate <= 0)
-            throw new IllegalArgumentException();
-
-        if (sampleRate < 0) throw new IllegalArgumentException();
+        if (sampleRate <= 0) throw new IllegalArgumentException();
         List<Point> points = new ArrayList<>();
         for (int i = 0; i < signalData.length; i++) {
             points.add(new Point(i, signalData[i]));
@@ -35,19 +33,18 @@ public abstract class SignalFactory {
     }
 
     public static Signal rampUp(double duration, int sampleRate) {
-        if (duration <= 0 || sampleRate <= 0) throw new IllegalArgumentException();
+        double samples = sampleRate * duration;
+        if (duration <= 0 || sampleRate <= 0 || samples <= 2) throw new IllegalArgumentException();
         List<Point> points = new ArrayList<>();
-        for (int i = 0; i < sampleRate * duration; i++) {
-            if (i == sampleRate * duration - 1)
-                if (i / (duration * sampleRate - 1) < 2) throw new IllegalArgumentException();
-            points.add(new Point(i, i / (duration * sampleRate - 1)));
+        for (int i = 0; i < samples; i++) {
+            points.add(new Point(i, i / (samples - 1)));
         }
         return new SignalMono(points, sampleRate);
     }
 
     public static Signal combineMonoSignals(List<Signal> signals) {
         if (signals == null) throw new NullPointerException();
-        if (signals.size() == 0) throw new IllegalArgumentException();
+        if (signals.size() <= 0) throw new IllegalArgumentException();
         int sampleRate = signals.get(0).getSampleRate();
         int size = Integer.MAX_VALUE;
         for (Signal signal : signals) {
@@ -145,7 +142,7 @@ public abstract class SignalFactory {
     }
 
     public static Signal drop(int count, Signal source) {
-        if (count < 0) {
+        if (count <= 0) {
             throw new IllegalArgumentException();
         }
 
@@ -249,76 +246,76 @@ public abstract class SignalFactory {
     }
 
     public static Signal rampDown(double duration, int sampleRate) {
-        if(duration <= 0 || sampleRate <= 0)
-            throw new IllegalArgumentException();
-
-        return null;
+        double samples = sampleRate * duration;
+        if (duration <= 0 || sampleRate <= 0 || samples <= 2) throw new IllegalArgumentException();
+        List<Point> points = new ArrayList<>();
+        for (int i = 0; i < samples; i++) {
+            points.add(new Point(i, i / (samples - 1)));
+        }
+        Collections.reverse(points);
+        return new SignalMono(points, sampleRate);
     }
 
     public static Signal merge(BiFunction<Double, Double, Double> function, Signal s1, Signal s2) {
-        if(s1 == null || s2 == null || function == null)
+        if (s1 == null || s2 == null || function == null)
             throw new NullPointerException();
 
-        if(s1.getSampleRate() != s2.getSampleRate())
+        if (s1.getSampleRate() != s2.getSampleRate())
             throw new IllegalArgumentException();
 
-        if(s1.getChannelCount() != s2.getChannelCount())
+        if (s1.getChannelCount() != s2.getChannelCount())
             throw new IllegalArgumentException();
 
         int size = s1.getSize() < s2.getSize() ? s1.getSize() : s2.getSize();
 
         List<List<Point>> values = new ArrayList<>();
 
-        for(int channel = 0; channel < s1.getChannelCount(); channel++)
-        {
+        for (int channel = 0; channel < s1.getChannelCount(); channel++) {
             List<Point> points = new ArrayList<>();
 
-            for(int index = 0; index < size; index++)
-            {
+            for (int index = 0; index < size; index++) {
                 points.add(new Point(channel,
                         function.apply(s1.getValueAtValid(channel, index), s2.getValueAtValid(channel, index))));
             }
 
             values.add(points);
         }
-
         if(values.size() == 0){
             if(s1.getChannelCount() == 1)
                 return new SignalMono(s1.getSampleRate());
             return new SignalStereo(s1.getSampleRate());
         }
-
         if(s1.getChannelCount() == 1)
+
             return new SignalMono(values.get(0), s1.getSampleRate());
         return new SignalStereo(values, s1.getSampleRate());
     }
 
     public static Signal add(Signal s1, Signal s2) {
-        if(s1 == null || s2 == null)
+        if (s1 == null || s2 == null)
             throw new NullPointerException();
 
-        if(s1.getSampleRate() != s2.getSampleRate())
+        if (s1.getSampleRate() != s2.getSampleRate())
             throw new IllegalArgumentException();
 
-        if(s1.getChannelCount() != s2.getChannelCount())
+        if (s1.getChannelCount() != s2.getChannelCount())
             throw new IllegalArgumentException();
 
         int size = s1.getSize() < s2.getSize() ? s1.getSize() : s2.getSize();
 
         List<List<Point>> values = new ArrayList<>();
 
-        for(int channel = 0; channel < s1.getChannelCount(); channel++)
-        {
+        for (int channel = 0; channel < s1.getChannelCount(); channel++) {
             List<Point> points = new ArrayList<>();
 
-            for(int index = 0; index < size; index++)
-            {
+            for (int index = 0; index < size; index++) {
                 points.add(new Point(channel,
                         s1.getValueAtValid(channel, index) + s2.getValueAtValid(channel, index)));
             }
 
             values.add(points);
         }
+
 
         if(values.size() == 0){
             if(s1.getChannelCount() == 1)
@@ -332,25 +329,23 @@ public abstract class SignalFactory {
     }
 
     public static Signal mult(Signal s1, Signal s2) {
-        if(s1 == null || s2 == null)
+        if (s1 == null || s2 == null)
             throw new NullPointerException();
 
-        if(s1.getSampleRate() != s2.getSampleRate())
+        if (s1.getSampleRate() != s2.getSampleRate())
             throw new IllegalArgumentException();
 
-        if(s1.getChannelCount() != s2.getChannelCount())
+        if (s1.getChannelCount() != s2.getChannelCount())
             throw new IllegalArgumentException();
 
         int size = s1.getSize() < s2.getSize() ? s1.getSize() : s2.getSize();
 
         List<List<Point>> values = new ArrayList<>();
 
-        for(int channel = 0; channel < s1.getChannelCount(); channel++)
-        {
+        for (int channel = 0; channel < s1.getChannelCount(); channel++) {
             List<Point> points = new ArrayList<>();
 
-            for(int index = 0; index < size; index++)
-            {
+            for (int index = 0; index < size; index++) {
                 points.add(new Point(channel,
                         s1.getValueAtValid(channel, index) * s2.getValueAtValid(channel, index)));
             }
