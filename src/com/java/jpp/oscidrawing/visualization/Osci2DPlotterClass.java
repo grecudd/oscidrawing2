@@ -34,7 +34,7 @@ public class Osci2DPlotterClass implements Osci2DPlotter{
         if(signal.getChannelCount() != 2)
             throw new IllegalArgumentException();
 
-        image.setRGB(signal.getValueAtValid(signal.getValueAtValid(0), index),
+        /*image.setRGB(signal.getValueAtValid(signal.getValueAtValid(0), index),
                 signal.getValueAtValid(1, 1),
                 col);*/
     }
@@ -43,6 +43,8 @@ public class Osci2DPlotterClass implements Osci2DPlotter{
     public void drawSignal(Signal signal, Color col) {
         if(signal.isInfinite() == true)
             throw new IllegalArgumentException();
+
+
 
     }
 

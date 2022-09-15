@@ -21,7 +21,8 @@ public abstract class Signal {
         if (isInfinite()) {
             return -1.0;
         }
-        return getSize()/getSampleRate();
+        double duration = (double)getSize() / (double)getSampleRate();
+        return duration;
     }
 
     public double getValueAt(int channel, int index) {
