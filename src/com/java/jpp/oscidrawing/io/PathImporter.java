@@ -11,9 +11,8 @@ import java.util.Optional;
 
 public class PathImporter {
     public static Optional<List<Point>> fromString(List<String> lines) {
+        List<Point> points = new ArrayList<>();
         try {
-            List<Point> points = new ArrayList<>();
-
             for (String line : lines) {
                 String[] numbers = line.split(",");
                 double x, y;
@@ -30,7 +29,7 @@ public class PathImporter {
 
             return Optional.of(points);
         } catch (Exception e) {
-            return Optional.empty();
+            return Optional.of(points);
         }
     }
 
