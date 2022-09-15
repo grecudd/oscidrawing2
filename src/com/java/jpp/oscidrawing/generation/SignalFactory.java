@@ -402,7 +402,27 @@ public abstract class SignalFactory {
         if(distances.size() != signal.getChannelCount())
             throw new IllegalArgumentException();
 
-        return null;
+        List<List<Point>> newSignal = new ArrayList<>();
+
+        for(int channel = 0; channel < signal.getChannelCount(); channel++){
+            List<Point> points = new ArrayList<>();
+
+            for(int index = 0; index < signal.getSize(); index++){
+                points.add(new Point(channel, signal.getValueAtValid(channel, index) + distances.get(channel)));
+            }
+
+            newSignal.add(points);
+        }
+
+        if(newSignal.size() == 0){
+            if(signal.getChannelCount() == 1)
+                return new SignalMono(signal.getSampleRate());
+            return new SignalStereo(signal.getSampleRate());
+        }
+
+        if(signal.getChannelCount() == 1)
+            return new SignalMono(newSignal.get(0), signal.getSampleRate());
+        return new SignalStereo(newSignal, signal.getSampleRate());
     }
 
     public static Signal fromPath(List<Point> points, double frequency, int sampleRate) {
