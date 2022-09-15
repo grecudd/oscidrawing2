@@ -60,6 +60,12 @@ public class SignalStereo extends Signal {
     public double getValueAt(int channel, int index) {
         if ((index >= getSize() || channel >= getChannelCount())||(index < 0 || channel < 0))
             return 0;
+
+        if(channel >= getChannelCount())
+            return 0;
+
+        if(index >= getSize())
+            return 0;
         return this.values.get(channel).get(index).getY();
     }
 }

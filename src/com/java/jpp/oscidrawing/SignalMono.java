@@ -69,6 +69,12 @@ public class SignalMono extends Signal{
         if(index < 0 || index >= getSize())
             return 0;
 
+        if(channel >= 1)
+            return 0;
+
+        if(index >= getSize())
+            return 0;
+
         return this.values.get(index).getY();
     }
 }
