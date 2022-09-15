@@ -44,7 +44,8 @@ public class Osci2DPlotterClass implements Osci2DPlotter{
         if(signal.isInfinite() == true)
             throw new IllegalArgumentException();
 
-
+        if(signal.getChannelCount() != 0)
+            throw new IllegalArgumentException();
 
     }
 

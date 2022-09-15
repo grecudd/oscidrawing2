@@ -9,9 +9,12 @@ import java.util.List;
 public class SignalMono extends Signal{
     List<Point> values = new ArrayList<>();
     int sampleRate;
+
+    boolean infinite;
     public SignalMono(List<Point> values, int sampleRate){
         this.values = values;
         this.sampleRate = sampleRate;
+        infinite = false;
     }
 
     public SignalMono(){
@@ -21,9 +24,16 @@ public class SignalMono extends Signal{
     public SignalMono(int sampleRate) {
         this.sampleRate = sampleRate;
     }
+
+    public SignalMono(List<Point> values, int sampleRate, boolean infinite) {
+        this.values = values;
+        this.sampleRate = sampleRate;
+        this.infinite = infinite;
+    }
+
     @Override
     public boolean isInfinite() {
-        return false;
+        return infinite;
     }
 
 
@@ -49,5 +59,16 @@ public class SignalMono extends Signal{
     @Override
     public double getValueAtValid(int channel, int index) {
         return values.get(index).getY();
+    }
+
+    @Override
+    public double getValueAt(int channel, int index) {
+        if(channel < 0 || channel >= getChannelCount())
+            return 0;
+
+        if(index < 0 || index >= getSize())
+            return 0;
+
+        return this.values.get(index).getY();
     }
 }

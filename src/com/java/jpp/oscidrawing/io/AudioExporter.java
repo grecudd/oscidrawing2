@@ -20,6 +20,8 @@ public class AudioExporter {
                 float valueAt = (float) signal.getValueAt(channel, i);
                 data.writeFloat(valueAt);
             }
+
+            data.close();
         } catch (Exception e) {
             return false;
         }
@@ -37,12 +39,14 @@ public class AudioExporter {
                 float valueAt = (float) signal.getValueAt(0, i);
                 data.writeFloat(valueAt);
             }
+            data.close();
             String path2 =path + "right.raw";
             DataOutputStream data1 = new DataOutputStream(new FileOutputStream(path2));
             for (int i = 0; i < signal.getSize(); i++) {
                 float valueAt = (float) signal.getValueAt(1, i);
                 data1.writeFloat(valueAt);
             }
+            data1.close();
         } catch (Exception e) {
             return false;
         }

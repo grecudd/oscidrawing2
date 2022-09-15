@@ -33,6 +33,10 @@ public class Point {
         if (factor == 1) {
             return p;
         }
+
+        if(getY() == p.getY() && getY() == p.getY())
+            return this;
+
         return new Point(x + factor * p.getX(), y + factor * p.getY());
     }
 }

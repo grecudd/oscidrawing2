@@ -9,9 +9,12 @@ import java.util.List;
 public class SignalStereo extends Signal {
     List<List<Point>> values = new ArrayList<>();
     int sampleRate;
+
+    boolean infinite;
     public SignalStereo(List<List<Point>> values, int sampleRate){
         this.values = values;
         this.sampleRate = sampleRate;
+        infinite = false;
     }
 
     public SignalStereo(){
@@ -22,9 +25,15 @@ public class SignalStereo extends Signal {
         this.sampleRate = sampleRate;
     }
 
+    public SignalStereo(List<List<Point>> values, int sampleRate, boolean infinite) {
+        this.values = values;
+        this.sampleRate = sampleRate;
+        this.infinite = infinite;
+    }
+
     @Override
     public boolean isInfinite() {
-        return false;
+        return infinite;
     }
 
     @Override

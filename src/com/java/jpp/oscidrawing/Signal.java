@@ -25,9 +25,5 @@ public abstract class Signal {
         return duration;
     }
 
-    public double getValueAt(int channel, int index) {
-        if ((index >= getSize() || channel >= getChannelCount())||(index < 0 || channel < 0))
-            return 0;
-        return this.points.get(channel).get(index).getY();
-    }
+    public abstract double getValueAt(int channel, int index);
 }
