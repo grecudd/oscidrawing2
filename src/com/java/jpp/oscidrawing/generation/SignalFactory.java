@@ -26,7 +26,7 @@ public abstract class SignalFactory {
         if (frequency <= 0 || duration <= 0 || sampleRate <= 0) throw new IllegalArgumentException();
         double step = (frequency * 2.0 * Math.PI) / (double)sampleRate;
         List<Point> points = new ArrayList<>();
-        for (int i = 0; i < sampleRate * duration; i++) {
+        for (int i = 0; i < sampleRate * duration-1; i++) {
             points.add(new Point(i, function.applyAsDouble(i * step)));
         }
         return new SignalMono(points, sampleRate);
@@ -36,7 +36,7 @@ public abstract class SignalFactory {
         double samples = sampleRate * duration;
         if (duration <= 0 || sampleRate <= 0 || samples <= 2) throw new IllegalArgumentException();
         List<Point> points = new ArrayList<>();
-        for (int i = 0; i < samples; i++) {
+        for (int i = 0; i < samples-1; i++) {
             points.add(new Point(i, i / (samples - 1)));
         }
         return new SignalMono(points, sampleRate);
@@ -57,7 +57,7 @@ public abstract class SignalFactory {
         for (Signal value : signals) {
             List<Point> points = new ArrayList<>();
             for (int j = 0; j < size; j++) {
-                points.add(new Point(j, value.getValueAtValid(0, j)));
+                points.add(new Point(j, value.getValueAt(0, j)));
             }
             signal.add(points);
         }
@@ -83,7 +83,7 @@ public abstract class SignalFactory {
         for (int i = 0; i < channels.length; i++) {
             List<Point> points = new ArrayList<>();
             for (int j = 0; j < source.getSize(); j++) {
-                points.add(new Point(i, source.getValueAtValid(channels[i], j)));
+                points.add(new Point(i, source.getValueAt(channels[i], j)));
             }
             signal.add(points);
         }
@@ -96,7 +96,7 @@ public abstract class SignalFactory {
         double step = (frequency * 2.0 * Math.PI) / (double)sampleRate;
         List<Point> sin = new ArrayList<>();
         List<Point> cos = new ArrayList<>();
-        for (int i = 0; i < sampleRate * duration; i++) {
+        for (int i = 0; i < sampleRate * duration-1; i++) {
             sin.add(new Point(i, Math.sin(i * step)));
             cos.add(new Point(i, Math.cos(i * step)));
         }
@@ -189,7 +189,7 @@ public abstract class SignalFactory {
         for (int channel = 0; channel < source.getChannelCount(); channel++) {
             List<Point> points = new ArrayList<>();
             for (int index = 0; index < source.getSize(); index++) {
-                points.add(new Point(channel, function.applyAsDouble(source.getValueAtValid(channel, index))));
+                points.add(new Point(channel, function.applyAsDouble(source.getValueAt(channel, index))));
             }
             signal.add(points);
         }
@@ -207,7 +207,7 @@ public abstract class SignalFactory {
         for (int channel = 0; channel < source.getChannelCount(); channel++) {
             List<Point> points = new ArrayList<>();
             for (int index = 0; index < source.getSize(); index++) {
-                points.add(new Point(channel, source.getValueAtValid(channel, index) * amplitude));
+                points.add(new Point(channel, source.getValueAt(channel, index) * amplitude));
             }
             signal.add(points);
         }
@@ -228,7 +228,7 @@ public abstract class SignalFactory {
         for (int channel = 0; channel < source.getChannelCount(); channel++) {
             List<Point> points = new ArrayList<>();
             for (int index = 0; index < source.getSize(); index++) {
-                points.add(new Point(channel, source.getValueAtValid(channel, source.getSize() - 1 - index)));
+                points.add(new Point(channel, source.getValueAt(channel, source.getSize() - 1 - index)));
             }
             signal.add(points);
         }
@@ -266,7 +266,7 @@ public abstract class SignalFactory {
         if (s1.getChannelCount() != s2.getChannelCount())
             throw new IllegalArgumentException();
 
-        int size = s1.getSize() < s2.getSize() ? s1.getSize() : s2.getSize();
+        int size = Math.min(s1.getSize(), s2.getSize());
 
         List<List<Point>> values = new ArrayList<>();
 
@@ -275,7 +275,7 @@ public abstract class SignalFactory {
 
             for (int index = 0; index < size; index++) {
                 points.add(new Point(channel,
-                        function.apply(s1.getValueAtValid(channel, index), s2.getValueAtValid(channel, index))));
+                        function.apply(s1.getValueAt(channel, index), s2.getValueAt(channel, index))));
             }
 
             values.add(points);
@@ -301,7 +301,7 @@ public abstract class SignalFactory {
         if (s1.getChannelCount() != s2.getChannelCount())
             throw new IllegalArgumentException();
 
-        int size = s1.getSize() < s2.getSize() ? s1.getSize() : s2.getSize();
+        int size = Math.min(s1.getSize(), s2.getSize());
 
         List<List<Point>> values = new ArrayList<>();
 
@@ -310,7 +310,7 @@ public abstract class SignalFactory {
 
             for (int index = 0; index < size; index++) {
                 points.add(new Point(channel,
-                        s1.getValueAtValid(channel, index) + s2.getValueAtValid(channel, index)));
+                        s1.getValueAt(channel, index) + s2.getValueAt(channel, index)));
             }
 
             values.add(points);
@@ -338,7 +338,7 @@ public abstract class SignalFactory {
         if (s1.getChannelCount() != s2.getChannelCount())
             throw new IllegalArgumentException();
 
-        int size = s1.getSize() < s2.getSize() ? s1.getSize() : s2.getSize();
+        int size = Math.min(s1.getSize(), s2.getSize());
 
         List<List<Point>> values = new ArrayList<>();
 
@@ -347,7 +347,7 @@ public abstract class SignalFactory {
 
             for (int index = 0; index < size; index++) {
                 points.add(new Point(channel,
-                        s1.getValueAtValid(channel, index) * s2.getValueAtValid(channel, index)));
+                        s1.getValueAt(channel, index) * s2.getValueAt(channel, index)));
             }
 
             values.add(points);
@@ -370,16 +370,17 @@ public abstract class SignalFactory {
 
         if(signals.size() == 0)
             throw new IllegalArgumentException();
+        int sampleRate = signals.get(0).getSampleRate();
+        int channelCount = signals.get(0).getChannelCount();
 
         for(int i = 1; i < signals.size(); i++){
-            if(signals.get(i).getSampleRate() != signals.get(0).getSampleRate())
+            if(signals.get(i).getSampleRate() != sampleRate)
                 throw new IllegalArgumentException();
 
-            if(signals.get(i).getChannelCount() != signals.get(0).getChannelCount())
+            if(signals.get(i).getChannelCount() != channelCount)
                 throw new IllegalArgumentException();
 
-            if(signals.get(i).isInfinite() == true){
-                if(i != signals.size() - 1)
+            if(signals.get(i).isInfinite() && i!=signals.size()-1){
                     throw new IllegalArgumentException();
             }
         }

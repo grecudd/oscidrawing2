@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Signal {
-
+    List<List<Point>> points = new ArrayList<>();
     public abstract boolean isInfinite();
 
     public abstract int getSize();
@@ -25,5 +25,9 @@ public abstract class Signal {
         return duration;
     }
 
-    public abstract double getValueAt(int channel, int index);
+    public double getValueAt(int channel, int index){
+        if ((index >= getSize() || channel >= getChannelCount())||(index < 0 || channel < 0))
+            return 0;
+        return this.points.get(channel).get(index).getY();
+    }
 }
