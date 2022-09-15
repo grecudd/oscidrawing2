@@ -24,7 +24,7 @@ public abstract class SignalFactory {
 
     public static Signal wave(DoubleUnaryOperator function, double frequency, double duration, int sampleRate) {
         if (frequency <= 0 || duration <= 0 || sampleRate <= 0) throw new IllegalArgumentException();
-        double step = (frequency * 2 * Math.PI) / sampleRate;
+        double step = (frequency * 2.0 * Math.PI) / (double)sampleRate;
         List<Point> points = new ArrayList<>();
         for (int i = 0; i < sampleRate * duration; i++) {
             points.add(new Point(i, function.applyAsDouble(i * step)));
@@ -93,7 +93,7 @@ public abstract class SignalFactory {
     public static Signal circle(double frequency, double duration, int sampleRate) {
         if (frequency <= 0 || duration <= 0 || sampleRate <= 0)
             throw new IllegalArgumentException();
-        double step = (frequency * 2 * Math.PI) / sampleRate;
+        double step = (frequency * 2.0 * Math.PI) / (double)sampleRate;
         List<Point> sin = new ArrayList<>();
         List<Point> cos = new ArrayList<>();
         for (int i = 0; i < sampleRate * duration; i++) {
@@ -117,7 +117,7 @@ public abstract class SignalFactory {
         for (int i = 0; i < 1000; i += sampleRate) {
             points.add(new Point(i, value));
         }
-        return new SignalMono(points, sampleRate);
+        return new SignalMono(points, sampleRate, true);
     }
 
     public static Signal take(int count, Signal source) {
@@ -143,7 +143,7 @@ public abstract class SignalFactory {
 
     public static Signal drop(int count, Signal source) {
         if (count <= 0) {
-            throw new IllegalArgumentException("Count is negative");
+            throw new IllegalArgumentException();
         }
 
         if (source.isInfinite() == false) {
@@ -161,6 +161,12 @@ public abstract class SignalFactory {
                     }
 
                     signal.add(points);
+                }
+
+                if(signal.size() == 0){
+                    if(source.getChannelCount() == 1)
+                        return new SignalMono();
+                    return new SignalStereo();
                 }
 
                 if (source.getChannelCount() == 1)
@@ -189,8 +195,8 @@ public abstract class SignalFactory {
         }
 
         if (source.getChannelCount() == 1)
-            return new SignalMono(signal.get(0), source.getSampleRate());
-        return new SignalStereo(signal, source.getSampleRate());
+            return new SignalMono(signal.get(0), source.getSampleRate(), source.isInfinite());
+        return new SignalStereo(signal, source.getSampleRate(), source.isInfinite());
     }
 
     public static Signal scale(double amplitude, Signal source) {
@@ -207,8 +213,8 @@ public abstract class SignalFactory {
         }
 
         if (source.getChannelCount() == 1)
-            return new SignalMono(signal.get(0), source.getSampleRate());
-        return new SignalStereo(signal, source.getSampleRate());
+            return new SignalMono(signal.get(0), source.getSampleRate(), source.isInfinite());
+        return new SignalStereo(signal, source.getSampleRate(), source.isInfinite());
     }
 
     public static Signal reverse(Signal source) {
@@ -225,6 +231,12 @@ public abstract class SignalFactory {
                 points.add(new Point(channel, source.getValueAtValid(channel, source.getSize() - 1 - index)));
             }
             signal.add(points);
+        }
+
+        if(signal.size() == 0){
+            if(source.getChannelCount() == 1)
+                return new SignalMono();
+            return new SignalStereo();
         }
 
         if (source.getChannelCount() == 1)
@@ -268,8 +280,13 @@ public abstract class SignalFactory {
 
             values.add(points);
         }
+        if(values.size() == 0){
+            if(s1.getChannelCount() == 1)
+                return new SignalMono(s1.getSampleRate());
+            return new SignalStereo(s1.getSampleRate());
+        }
+        if(s1.getChannelCount() == 1)
 
-        if (s1.getChannelCount() == 1)
             return new SignalMono(values.get(0), s1.getSampleRate());
         return new SignalStereo(values, s1.getSampleRate());
     }
@@ -299,7 +316,14 @@ public abstract class SignalFactory {
             values.add(points);
         }
 
-        if (s1.getChannelCount() == 1)
+
+        if(values.size() == 0){
+            if(s1.getChannelCount() == 1)
+                return new SignalMono(s1.getSampleRate());
+            return new SignalStereo(s1.getSampleRate());
+        }
+
+        if(s1.getChannelCount() == 1)
             return new SignalMono(values.get(0), s1.getSampleRate());
         return new SignalStereo(values, s1.getSampleRate());
     }
@@ -329,25 +353,66 @@ public abstract class SignalFactory {
             values.add(points);
         }
 
-        if (s1.getChannelCount() == 1)
+        if(values.size() == 0){
+            if(s1.getChannelCount() == 1)
+                return new SignalMono(s1.getSampleRate());
+            return new SignalStereo(s1.getSampleRate());
+        }
+
+        if(s1.getChannelCount() == 1)
             return new SignalMono(values.get(0), s1.getSampleRate());
         return new SignalStereo(values, s1.getSampleRate());
     }
 
     public static Signal append(List<Signal> signals) {
-        throw new UnsupportedOperationException();
+        if(signals == null)
+            throw new NullPointerException();
+
+        if(signals.size() == 0)
+            throw new IllegalArgumentException();
+
+        for(int i = 1; i < signals.size(); i++){
+            if(signals.get(i).getSampleRate() != signals.get(0).getSampleRate())
+                throw new IllegalArgumentException();
+
+            if(signals.get(i).getChannelCount() != signals.get(0).getChannelCount())
+                throw new IllegalArgumentException();
+
+            if(signals.get(i).isInfinite() == true){
+                if(i != signals.size() - 1)
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        return null;
     }
 
     public static Signal append(Signal... signals) {
-        throw new UnsupportedOperationException();
+        Signal signal = append(Arrays.stream(signals).toList());
+        return signal;
     }
 
     public static Signal translate(List<Double> distances, Signal signal) {
-        throw new UnsupportedOperationException();
+        if(distances == null)
+            throw new NullPointerException();
+
+        if(signal == null)
+            throw new NullPointerException();
+
+        if(distances.size() != signal.getChannelCount())
+            throw new IllegalArgumentException();
+
+        return null;
     }
 
     public static Signal fromPath(List<Point> points, double frequency, int sampleRate) {
-        throw new UnsupportedOperationException();
+        if(frequency <= 0 || sampleRate <= 0)
+            throw new IllegalArgumentException();
+
+        if(points.size() < 2)
+            throw new IllegalArgumentException();
+
+        return null;
     }
 
     /* Optional */
