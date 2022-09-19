@@ -1,10 +1,8 @@
-import com.java.jpp.oscidrawing.SignalMono;
-import com.java.jpp.oscidrawing.SignalStereo;
+import com.java.jpp.oscidrawing.SignalClass;
 import com.java.jpp.oscidrawing.generation.pathutils.Line;
 import com.java.jpp.oscidrawing.generation.pathutils.Point;
 import com.java.jpp.oscidrawing.io.AudioExporter;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +16,7 @@ public class Main {
         list.add(points);
         boolean b=true;
         try {
-            System.out.println(AudioExporter.writeChannelToFile("C://temp/signal", new SignalStereo(list, 1), 0));
+            System.out.println(AudioExporter.writeChannelToFile("C://temp/signal", new SignalClass(list, 1), 0));
         } catch (IllegalAccessException e) {
 
         }

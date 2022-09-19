@@ -7,6 +7,9 @@ import java.util.List;
 
 public abstract class Signal {
     List<List<Point>> points = new ArrayList<>();
+    int sampleRate;
+    boolean infinite;
+
     public abstract boolean isInfinite();
 
     public abstract int getSize();
@@ -17,6 +20,12 @@ public abstract class Signal {
 
     public abstract double getValueAtValid(int channel, int index);
 
+    public Signal(List<List<Point>> values, int sampleRate, boolean infinte){
+        this.points = values;
+        this.sampleRate = sampleRate;
+        this.infinite = infinte;
+    }
+
     public double getDuration() {
         if (isInfinite()) {
             return -1.0;
@@ -26,7 +35,10 @@ public abstract class Signal {
     }
 
     public double getValueAt(int channel, int index){
-        if ((index >= getSize() || channel >= getChannelCount())||(index < 0 || channel < 0))
+        if(channel < 0 || channel >= getChannelCount())
+            return 0;
+
+        if(index < 0 || index >= getSize())
             return 0;
         return this.points.get(channel).get(index).getY();
     }
