@@ -55,6 +55,6 @@ public interface SignalTimePlotter {
             }
         }
 
-        return new SignalTimePlotterClass(image);
+        return new SignalTimePlotterClass(timeScale ,width, height, valScale, image);
     }
 }

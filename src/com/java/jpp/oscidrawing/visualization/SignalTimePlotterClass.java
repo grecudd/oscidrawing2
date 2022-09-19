@@ -6,33 +6,36 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class SignalTimePlotterClass implements SignalTimePlotter{
-    int timeScale;
+    double timeScale;
     int width;
+    int height;
+    double valScale;
     BufferedImage image;
-    public SignalTimePlotterClass(BufferedImage image){
-        this.image = image;
-    }
-    public SignalTimePlotterClass(int timeScale, int width) {
+
+
+    public SignalTimePlotterClass(double timeScale, int width,int height, double valScale, BufferedImage image) {
         this.timeScale = timeScale;
         this.width = width;
+        this.height = height;
+        this.valScale = valScale;
+        this.image = image;
     }
 
     @Override
     public int sampleIndexToImageXCoord(int sampleIndex, int sampleRate) {
-        return ((sampleIndex-0)*(width-1-0))/((sampleRate*(timeScale-1)-0)-0);
+        return (int) ((sampleIndex*(width-1))/(sampleRate*timeScale-1));
     }
 
     @Override
     public int signalValToImageYCoord(double val) {
-        return 0;
+        return  (int) (((val-valScale)*(height-1))/(-valScale-valScale));
     }
 
     @Override
     public void drawSignalAt(Signal signal, int channel, int index, Color col) {
-         if(signal.getChannelCount() != 2)
-             throw new IllegalArgumentException();
-
-
+        double x = signal.getValueAt(channel, index);
+        if (x >= 0 && x < width  && x < height)
+            image.setRGB((int) x, (int) x, col.getRGB());
     }
 
     @Override
