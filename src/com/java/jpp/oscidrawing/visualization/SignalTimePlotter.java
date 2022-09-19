@@ -40,6 +40,21 @@ public interface SignalTimePlotter {
             }
         }
 
-        return new SignalTimePlotterClass(image);
+        if(valScale != 0) {
+            if(middle +  (int) valScale >= height)
+            {
+                throw new IllegalArgumentException();
+            }
+
+            for (int x = 0; x < width; x++) {
+                image.setRGB(x, middle +  (int) valScale, Color.WHITE.getRGB());
+            }
+
+            for (int x = 0; x < width; x++) {
+                image.setRGB(x, middle -  (int) valScale, Color.WHITE.getRGB());
+            }
+        }
+
+        return new SignalTimePlotterClass(timeScale ,width, height, valScale, image);
     }
 }
