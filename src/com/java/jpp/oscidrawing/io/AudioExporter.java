@@ -31,14 +31,14 @@ public class AudioExporter {
         if (signal.isInfinite() || signal.getChannelCount() != 2)
             throw new IllegalArgumentException();
         try {
-            String path1 =path + "left.raw";
+            String path1 = path + "left.raw";
             DataOutputStream data = new DataOutputStream(new FileOutputStream(path1));
             for (int i = 0; i < signal.getSize(); i++) {
                 float valueAt = (float) signal.getValueAt(0, i);
                 data.writeFloat(valueAt);
             }
             data.close();
-            String path2 =path + "right.raw";
+            String path2 = path + "right.raw";
             DataOutputStream data1 = new DataOutputStream(new FileOutputStream(path2));
             for (int i = 0; i < signal.getSize(); i++) {
                 float valueAt = (float) signal.getValueAt(1, i);

@@ -1,0 +1,16 @@
+SignalFactory
+	-> combineMonoSignals
+		-> index 0 out of bounds
+
+	-> extractChannels
+		-> trying to extract 2 channels from a signal with 2 channels should throw IllegalArgumentException
+		-> index 0 out of bounds
+
+	-> circle
+		-> getSize() returned a wrong value
+
+	-> cycle [should be fixed]
+		-> isInfinite() should return true
+
+	-> take
+		-> getSize() returned a wrong value

@@ -109,7 +109,14 @@ public abstract class SignalFactory {
     public static Signal cycle(Signal signal) {
         if (signal == null)
             throw new NullPointerException();
-        return new SignalMono(new ArrayList<>(), 1);
+
+        List<List<Point>> newSignal = new ArrayList<>();
+
+
+
+        if(signal.getChannelCount() == 1)
+            return new SignalMono(newSignal.get(0), signal.getSampleRate(), true);
+        return new SignalStereo(newSignal, signal.getSampleRate(), true);
     }
 
     public static Signal infiniteFromValue(double value, int sampleRate) {
@@ -142,6 +149,11 @@ public abstract class SignalFactory {
     }
 
     public static Signal drop(int count, Signal source) {
+        if(source == null)
+        {
+            throw new NullPointerException();
+        }
+
         if (count <= 0) {
             throw new IllegalArgumentException();
         }
@@ -373,6 +385,7 @@ public abstract class SignalFactory {
         int sampleRate = signals.get(0).getSampleRate();
         int channelCount = signals.get(0).getChannelCount();
 
+        boolean infinite = false;
         for(int i = 1; i < signals.size(); i++){
             if(signals.get(i).getSampleRate() != sampleRate)
                 throw new IllegalArgumentException();
@@ -380,12 +393,24 @@ public abstract class SignalFactory {
             if(signals.get(i).getChannelCount() != channelCount)
                 throw new IllegalArgumentException();
 
-            if(signals.get(i).isInfinite() && i!=signals.size()-1){
+            if(signals.get(i).isInfinite()){
+                if(i != signals.get(0).getSize())
                     throw new IllegalArgumentException();
+                else infinite = true;
             }
         }
 
-        return null;
+        List<Point> signal = new ArrayList<>();
+        for(int channel = 0; channel < signals.size(); channel++)
+        {
+            for(int index = 0; index < signals.get(0).getSize(); index++)
+            {
+                signal.add(new Point(channel * signals.get(channel).getChannelCount() + index,
+                        signals.get(channel).getValueAtValid(0, index)));
+            }
+        }
+
+        return new SignalMono(signal, signals.get(0).getSampleRate(), infinite);
     }
 
     public static Signal append(Signal... signals) {

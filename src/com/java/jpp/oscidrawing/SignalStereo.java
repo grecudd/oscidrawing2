@@ -38,6 +38,10 @@ public class SignalStereo extends Signal {
 
     @Override
     public int getSize() {
+
+        if(isInfinite() == true)
+            return -1;
+
         return values.get(0).size();
     }
 
@@ -58,8 +62,12 @@ public class SignalStereo extends Signal {
 
     @Override
     public double getValueAt(int channel, int index) {
-        if ((index >= getSize() || channel >= getChannelCount())||(index < 0 || channel < 0))
+        if(channel < 0 || channel >= getChannelCount())
             return 0;
+
+        if(index < 0 || index >= getSize())
+            return 0;
+
         return this.values.get(channel).get(index).getY();
     }
 }
