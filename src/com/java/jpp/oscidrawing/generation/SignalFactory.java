@@ -393,7 +393,8 @@ public abstract class SignalFactory {
             if(signals.get(i).getChannelCount() != channelCount)
                 throw new IllegalArgumentException();
 
-            if(signals.get(i).isInfinite() && i!=signals.size()-1){
+            if(signals.get(i).isInfinite()){
+                if(i != signals.get(0).getSize())
                     throw new IllegalArgumentException();
                 else infinite = true;
             }
