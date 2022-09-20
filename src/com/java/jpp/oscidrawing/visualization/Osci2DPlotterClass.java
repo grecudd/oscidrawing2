@@ -44,9 +44,6 @@ public class Osci2DPlotterClass implements Osci2DPlotter {
         double y = signal.getValueAt(1, index);
         if (x >= 0 && x < size && y >= 0 && y < size)
             image.setRGB((int) x, (int) y, col.getRGB());
-        /*image.setRGB(signal.getValueAtValid(signal.getValueAtValid(0), index),
-                signal.getValueAtValid(1, 1),
-                col);*/
     }
 
     @Override

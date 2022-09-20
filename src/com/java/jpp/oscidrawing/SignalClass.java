@@ -35,6 +35,8 @@ public class SignalClass extends Signal {
 
     @Override
     public double getValueAtValid(int channel, int index) {
+        if(isInfinite())
+            index = index  % points.size();
         return points.get(channel).get(index).getY();
     }
 
@@ -43,9 +45,15 @@ public class SignalClass extends Signal {
         if(channel < 0 || channel >= getChannelCount())
             return 0;
 
-        if(index < 0 || index >= getSize())
-            return 0;
-
-        return this.points.get(channel).get(index).getY();
+        if (isInfinite()) {
+            if (index < 0) {
+                return 0;
+            }
+        } else {
+            if (index < 0 || index >= getSize()) {
+                return 0;
+            }
+        }
+        return getValueAtValid(channel, index);
     }
 }
