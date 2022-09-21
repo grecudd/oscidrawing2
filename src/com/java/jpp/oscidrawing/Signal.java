@@ -16,6 +16,7 @@ public abstract class Signal {
         this.infinite = infinte;
     }
 
+
     public abstract boolean isInfinite();
 
     public abstract int getSize();
@@ -26,6 +27,12 @@ public abstract class Signal {
 
     public abstract double getValueAtValid(int channel, int index);
 
+    public Signal(List<List<Point>> values, int sampleRate, boolean infinte){
+        this.points = values;
+        this.sampleRate = sampleRate;
+        this.infinite = infinte;
+    }
+
     public double getDuration() {
         if (isInfinite()) {
             return -1.0;
@@ -34,9 +41,11 @@ public abstract class Signal {
         return duration;
     }
 
+
     public double getValueAt(int channel, int index) {
 
         if (channel < 0 || channel >= getChannelCount()) {
+
             return 0;
         }
 

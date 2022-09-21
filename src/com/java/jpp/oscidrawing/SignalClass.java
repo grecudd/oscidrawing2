@@ -37,6 +37,7 @@ public class SignalClass extends Signal {
     public double getValueAtValid(int channel, int index) {
 //        if(isInfinite())
 //            index = index  % points.size();
+
         return points.get(channel).get(index).getY();
     }
 

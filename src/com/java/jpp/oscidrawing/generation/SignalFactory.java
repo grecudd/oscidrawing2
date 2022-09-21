@@ -29,7 +29,9 @@ public abstract class SignalFactory {
         if (frequency <= 0 || duration <= 0 || sampleRate <= 0) throw new IllegalArgumentException();
         double step = (frequency * 2.0 * Math.PI) / (double) sampleRate;
         List<Point> points = new ArrayList<>();
+
         for (int i = 0; i < ((int) (sampleRate * duration)); i++) {
+
             points.add(new Point(i, function.applyAsDouble(i * step)));
         }
         List<List<Point>> signal = new ArrayList<>();
@@ -41,7 +43,9 @@ public abstract class SignalFactory {
         int samples = (int) (sampleRate * duration);
         if (duration <= 0 || sampleRate <= 0 || samples <= 2) throw new IllegalArgumentException();
         List<Point> points = new ArrayList<>();
+
         for (int i = 0; i < samples; i++) {
+
             points.add(new Point(i, i / (samples - 1)));
         }
         List<List<Point>> signal = new ArrayList<>();
@@ -170,6 +174,7 @@ public abstract class SignalFactory {
     }
 
     public static Signal drop(int count, Signal source) {
+
         if (count < 0)
             throw new IllegalArgumentException();
         boolean inf = false;
@@ -193,6 +198,7 @@ public abstract class SignalFactory {
                     points.add(new Point(j, source.getValueAtValid(i, j + count)));
                 }
                 signal.add(points);
+
             }
         }
         return new SignalClass(signal, source.getSampleRate(), inf);
@@ -325,7 +331,6 @@ public abstract class SignalFactory {
 
             values.add(points);
         }
-
         return new SignalClass(values, s1.getSampleRate(), inf);
     }
 
@@ -395,7 +400,6 @@ public abstract class SignalFactory {
 
             values.add(points);
         }
-
         return new SignalClass(values, s1.getSampleRate(), inf);
     }
 
@@ -415,7 +419,7 @@ public abstract class SignalFactory {
 
             if (signals.get(i).getChannelCount() != channelCount)
                 throw new IllegalArgumentException();
-
+          
             if (signals.get(i).isInfinite() && i != (signals.size() - 1) ){
                     throw new IllegalArgumentException();
             }
@@ -425,6 +429,7 @@ public abstract class SignalFactory {
         int i=0;
         List<Point> signal = new ArrayList<>();
         for (int channel = 0; channel < signals.size(); channel++) {
+
             int size=infinite? 1000:signals.get(channel).getSize();
             for (int index = i; index < size; index++) {
                 if (index<signals.get(0).getSize())
@@ -475,10 +480,7 @@ public abstract class SignalFactory {
 
         if (points.size() < 2)
             throw new IllegalArgumentException();
-
-        // TO DO: calculate the duration
-        double duration = 0;
-
+        double duration = (double) points.size() / (double) sampleRate;
         List<Line> lines = new ArrayList<>();
         List<Double> lineLengths = new ArrayList<>();
         double pathLength = 0;
@@ -497,12 +499,39 @@ public abstract class SignalFactory {
         }
 
         List<Point> interpolatedPoints = new ArrayList<>();
+        for (int i = 0; i < lines.size(); i++) {
+            int numPoints = pointsPerLine.get(i);
+            List<Integer> indices = new ArrayList<>();
 
-        for (Line line : lines) {
+            for (int j = 0; j < numPoints; j++) {
+                indices.add(j);
+            }
 
+            List<Double> lineProgress = new ArrayList<>();
+
+            for (int j = 0; j < numPoints; j++) {
+                lineProgress.add((double) indices.get(j) / (double) numPoints);
+            }
+
+            List<Point> interpolatedPointsOfLine = new ArrayList<>();
+
+            for (int j = 0; j < lineProgress.size(); j++) {
+                interpolatedPointsOfLine.add(lines.get(j).getPointAt(lineProgress.get(j)));
+                interpolatedPoints.add(interpolatedPointsOfLine.get(j));
+            }
         }
 
-        return new SignalClass(null, 0, false);
+        List<List<Point>> signal = new ArrayList<>();
+        List<Point> values = new ArrayList<>();
+        List<Point> values1 = new ArrayList<>();
+        for (int index = 0; index < interpolatedPoints.size(); index++) {
+            values.add(new Point(index, interpolatedPoints.get(index).getX()));
+            values1.add(new Point(index, interpolatedPoints.get(index).getY()));
+        }
+
+        return new SignalClass(signal, sampleRate, false);
+
+
     }
 
     /* Optional */

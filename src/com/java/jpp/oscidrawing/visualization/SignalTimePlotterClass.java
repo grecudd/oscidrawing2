@@ -35,7 +35,7 @@ public class SignalTimePlotterClass implements SignalTimePlotter{
     public void drawSignalAt(Signal signal, int channel, int index, Color col) {
         double x = signal.getValueAt(channel, index);
         if (x >= 0 && x < width  && x < height)
-            image.setRGB((int) x, (int) x, col.getRGB());
+            image.setRGB(index, (int) x, col.getRGB());
     }
 
     @Override
@@ -45,7 +45,8 @@ public class SignalTimePlotterClass implements SignalTimePlotter{
 
     @Override
     public void drawSignal(Signal signal, Color... colors) {
-
+        if(colors.length >= signal.getChannelCount())
+            throw new IllegalArgumentException();
     }
 
     @Override
