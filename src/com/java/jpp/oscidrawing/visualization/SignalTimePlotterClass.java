@@ -45,7 +45,8 @@ public class SignalTimePlotterClass implements SignalTimePlotter{
 
     @Override
     public void drawSignal(Signal signal, Color... colors) {
-
+        if(colors.length >= signal.getChannelCount())
+            throw new IllegalArgumentException();
     }
 
     @Override
