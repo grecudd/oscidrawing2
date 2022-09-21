@@ -156,11 +156,10 @@ public abstract class SignalFactory {
             List<Point> points = new ArrayList<>();
             int i = 0;
             for (; i < source.getSize(); i++) {
-                    points.add(new Point(i, source.getValueAtValid(j, i)));
+                points.add(new Point(i, source.getValueAtValid(j, i)));
             }
 
-            for(; i < count; i++)
-            {
+            for (; i < count; i++) {
                 points.add(new Point(i, 0));
             }
 
@@ -425,14 +424,12 @@ public abstract class SignalFactory {
         if (points.size() < 2)
             throw new IllegalArgumentException();
 
-        // TO DO: calculate the duration
-        double duration = 0;
+        double duration = (double) points.size() / (double) sampleRate;
 
         List<Line> lines = new ArrayList<>();
         List<Double> lineLengths = new ArrayList<>();
         double pathLength = 0;
-        for(int i = 1; i < points.size(); i++)
-        {
+        for (int i = 1; i < points.size(); i++) {
             lines.add(new Line(points.get(i - 1), points.get(i)));
             double len = lines.get(i - 1).length();
             lineLengths.add(len);
@@ -441,19 +438,45 @@ public abstract class SignalFactory {
 
         List<Double> normalizedLineLenghts = new ArrayList<>();
         List<Integer> pointsPerLine = new ArrayList<>();
-        for(int i = 0; i < lineLengths.size(); i++)
-        {
-            normalizedLineLenghts.add((double)(lineLengths.get(i) / pathLength));
+        for (int i = 0; i < lineLengths.size(); i++) {
+            normalizedLineLenghts.add((double) (lineLengths.get(i) / pathLength));
             pointsPerLine.add((int) (duration * normalizedLineLenghts.get(i) * sampleRate));
         }
 
         List<Point> interpolatedPoints = new ArrayList<>();
 
-        for(Line line : lines){
+        for (int i = 0; i < lines.size(); i++) {
+            int numPoints = pointsPerLine.get(i);
+            List<Integer> indices = new ArrayList<>();
 
+            for (int j = 0; j < numPoints; j++) {
+                indices.add(j);
+            }
+
+            List<Double> lineProgress = new ArrayList<>();
+
+            for (int j = 0; j < numPoints; j++) {
+                lineProgress.add((double) indices.get(j) / (double) numPoints);
+            }
+
+            List<Point> interpolatedPointsOfLine = new ArrayList<>();
+
+            for (int j = 0; j < lineProgress.size(); j++) {
+                interpolatedPointsOfLine.add(lines.get(j).getPointAt(lineProgress.get(j)));
+                interpolatedPoints.add(interpolatedPointsOfLine.get(j));
+            }
         }
 
-        return new SignalClass(null, 0, false);
+        List<List<Point>> signal = new ArrayList<>();
+        List<Point> values = new ArrayList<>();
+        List<Point> values1 = new ArrayList<>();
+        for (int index = 0; index < interpolatedPoints.size(); index++) {
+            values.add(new Point(index, interpolatedPoints.get(index).getX()));
+            values1.add(new Point(index, interpolatedPoints.get(index).getY()));
+        }
+
+        return new SignalClass(signal, sampleRate, false);
+
     }
 
     /* Optional */
