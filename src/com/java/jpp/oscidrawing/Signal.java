@@ -10,6 +10,13 @@ public abstract class Signal {
     int sampleRate;
     boolean infinite;
 
+    public Signal(List<List<Point>> values, int sampleRate, boolean infinte) {
+        this.points = values;
+        this.sampleRate = sampleRate;
+        this.infinite = infinte;
+    }
+
+
     public abstract boolean isInfinite();
 
     public abstract int getSize();
@@ -30,16 +37,27 @@ public abstract class Signal {
         if (isInfinite()) {
             return -1.0;
         }
-        double duration = (double)getSize() / (double)getSampleRate();
+        double duration = (double) getSize() / (double) getSampleRate();
         return duration;
     }
 
-    public double getValueAt(int channel, int index){
-        if(channel < 0 || channel >= getChannelCount())
-            return 0;
 
-        if(index < 0 || index >= getSize())
+    public double getValueAt(int channel, int index) {
+
+        if (channel < 0 || channel >= getChannelCount()) {
+
             return 0;
-        return this.points.get(channel).get(index).getY();
+        }
+
+        if (isInfinite()) {
+            if (index < 0) {
+                return 0;
+            }
+        } else {
+            if (index < 0 || index >= getSize()) {
+                return 0;
+            }
+        }
+        return getValueAtValid(channel, index);
     }
 }
