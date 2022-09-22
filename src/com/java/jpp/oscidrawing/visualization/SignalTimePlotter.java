@@ -27,7 +27,7 @@ public interface SignalTimePlotter {
 
         if(height % 2 == 0){
             middle--;
-        }
+        } else middle++;
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -37,21 +37,6 @@ public interface SignalTimePlotter {
                     continue;
                 }
                 image.setRGB(x, y, bgcol.getRGB());
-            }
-        }
-
-        if(valScale != 0) {
-            if(middle +  (int) valScale >= height)
-            {
-                throw new IllegalArgumentException();
-            }
-
-            for (int x = 0; x < width; x++) {
-                image.setRGB(x, middle +  (int) valScale, Color.WHITE.getRGB());
-            }
-
-            for (int x = 0; x < width; x++) {
-                image.setRGB(x, middle -  (int) valScale, Color.WHITE.getRGB());
             }
         }
 

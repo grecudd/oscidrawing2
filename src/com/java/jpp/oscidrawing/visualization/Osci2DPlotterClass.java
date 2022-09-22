@@ -16,12 +16,6 @@ public class Osci2DPlotterClass implements Osci2DPlotter {
         this.scale = scale;
     }
 
-    public Osci2DPlotterClass(int size, double scale, Color bgcol) {
-        this.size = size;
-        this.scale = scale;
-        this.image = image;
-    }
-
     @Override
     public int signalValToImageXCoord(double val) {
         double v = val + scale;

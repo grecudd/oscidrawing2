@@ -14,6 +14,7 @@ public class SignalTimePlotterClass implements SignalTimePlotter{
     double valScale;
     BufferedImage image;
 
+    int middle;
 
     public SignalTimePlotterClass(double timeScale, int width,int height, double valScale, BufferedImage image) {
         this.timeScale = timeScale;
@@ -21,6 +22,11 @@ public class SignalTimePlotterClass implements SignalTimePlotter{
         this.height = height;
         this.valScale = valScale;
         this.image = image;
+        middle = height / 2;
+
+        if(height % 2 == 0){
+            middle--;
+        } else middle++;
     }
 
     @Override
@@ -35,7 +41,7 @@ public class SignalTimePlotterClass implements SignalTimePlotter{
 
     @Override
     public void drawSignalAt(Signal signal, int channel, int index, Color col) {
-        double x = signal.getValueAtValid(channel, index);
+        double x = middle + signal.getValueAtValid(channel, index);
         if (x >= 0 && x < height)
             image.setRGB(index, (int) x, col.getRGB());
     }
@@ -50,7 +56,7 @@ public class SignalTimePlotterClass implements SignalTimePlotter{
 
     @Override
     public void drawSignal(Signal signal, Color... colors) {
-        if(colors.length >= signal.getChannelCount())
+        if(colors.length != signal.getChannelCount())
             throw new IllegalArgumentException();
 
         List<Color> colorList = Arrays.stream(colors).toList();
