@@ -4,6 +4,8 @@ import com.java.jpp.oscidrawing.Signal;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
 
 public class SignalTimePlotterClass implements SignalTimePlotter{
     double timeScale;
@@ -33,20 +35,29 @@ public class SignalTimePlotterClass implements SignalTimePlotter{
 
     @Override
     public void drawSignalAt(Signal signal, int channel, int index, Color col) {
-        double x = signal.getValueAt(channel, index);
-        if (x >= 0 && x < width  && x < height)
+        double x = signal.getValueAtValid(channel, index);
+        if (x >= 0 && x < height)
             image.setRGB(index, (int) x, col.getRGB());
     }
 
     @Override
     public void drawSignal(Signal signal, int channel, Color col) {
-
+        for(int index = 0; index < signal.getSize(); index++)
+        {
+            drawSignalAt(signal, channel, index, col);
+        }
     }
 
     @Override
     public void drawSignal(Signal signal, Color... colors) {
         if(colors.length >= signal.getChannelCount())
             throw new IllegalArgumentException();
+
+        List<Color> colorList = Arrays.stream(colors).toList();
+        for(int channel = 0; channel < signal.getChannelCount(); channel++)
+        {
+            drawSignal(signal, channel, colorList.get(channel));
+        }
     }
 
     @Override
