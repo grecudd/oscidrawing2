@@ -528,7 +528,8 @@ public abstract class SignalFactory {
             values.add(new Point(index, interpolatedPoints.get(index).getX()));
             values1.add(new Point(index, interpolatedPoints.get(index).getY()));
         }
-
+        signal.add(values);
+        signal.add(values1);
         return new SignalClass(signal, sampleRate, false);
 
 

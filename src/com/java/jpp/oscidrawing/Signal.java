@@ -27,11 +27,6 @@ public abstract class Signal {
 
     public abstract double getValueAtValid(int channel, int index);
 
-    public Signal(List<List<Point>> values, int sampleRate, boolean infinte){
-        this.points = values;
-        this.sampleRate = sampleRate;
-        this.infinite = infinte;
-    }
 
     public double getDuration() {
         if (isInfinite()) {
